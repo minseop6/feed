@@ -6,13 +6,7 @@ import { DuplicateEmailException } from 'src/type/exception/duplicate-email.exce
 import { AccountRepository } from 'src/infrastructure/db/repository';
 import { Account } from 'src/domain/account/account';
 import { AccountDto } from 'src/type/dto/account.dto';
-
-const mockAccountRepository = () => ({
-  findById: jest.fn(),
-  findByEmail: jest.fn(),
-  create: jest.fn(),
-  build: jest.fn(),
-});
+import { AccountRepositoryMock } from 'test/mock/repository/account.repository.mock';
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -29,7 +23,7 @@ describe('AccountService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         AccountService,
-        { provide: AccountRepository, useFactory: mockAccountRepository },
+        { provide: AccountRepository, useClass: AccountRepositoryMock },
       ],
     }).compile();
 

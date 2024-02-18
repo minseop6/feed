@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 
-import { AccountModule } from '../account/account.module';
 import { SchoolService } from './service';
 import {
+  AccountRepositoryModule,
   SchoolMappingRepositoryModule,
   SchoolRepositoryModule,
 } from 'src/infrastructure/db/repository';
 
 @Module({
   imports: [
-    AccountModule,
+    AccountRepositoryModule,
     SchoolRepositoryModule,
     SchoolMappingRepositoryModule,
   ],

@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
 
-import { AccountService } from 'src/use-case/account/service';
 import { AccountType } from 'src/type/enum/account-type.enum';
 import { Transactional } from 'typeorm-transactional';
 import { CreateSchoolDto, SchoolDto } from 'src/type/dto/school.dto';
 import {
+  AccountRepository,
   SchoolMappingRepository,
   SchoolRepository,
 } from 'src/infrastructure/db/repository';
 import { CreateSchool } from 'src/domain/school/school';
+import { SchoolNotFoundException } from 'src/type/exception/school-not-found.exception';
+import { InvalidAccountException } from 'src/type/exception/invalid-account.exception';
+import { AccountNotFoundException } from 'src/type/exception/account-not-found.exception';
+import { Account } from 'src/domain/account';
 
 @Injectable()
 export class SchoolService {
   constructor(
-    private readonly accountService: AccountService,
+    private readonly accountRepository: AccountRepository,
     private readonly schoolRepository: SchoolRepository,
     private readonly schoolMappingRepository: SchoolMappingRepository,
   ) {}
@@ -22,11 +26,13 @@ export class SchoolService {
     accountId: number,
     schoolId: number,
   ): Promise<SchoolDto> {
-    await this.accountService.getById(accountId);
+    await this.getAccount(accountId);
 
     const school = await this.schoolRepository.findById(schoolId);
     if (!school) {
-      throw new Error(`School is not exists. schoolId: ${schoolId}`);
+      throw new SchoolNotFoundException(
+        `School is not exists. schoolId: ${schoolId}`,
+      );
     }
 
     return SchoolDto.from(school);
@@ -37,9 +43,9 @@ export class SchoolService {
     accountId: number,
     school: CreateSchoolDto,
   ): Promise<SchoolDto> {
-    const account = await this.accountService.getById(accountId);
-    if (account.type !== AccountType.ADMIN) {
-      throw new Error('Account type must be admin.');
+    const account = await this.getAccount(accountId);
+    if (account.getType() !== AccountType.ADMIN) {
+      throw new InvalidAccountException('Account type must be admin.');
     }
 
     const createdSchool = await this.schoolRepository.save(
@@ -48,5 +54,16 @@ export class SchoolService {
     await this.schoolMappingRepository.create(accountId, createdSchool.getId());
 
     return SchoolDto.from(createdSchool);
+  }
+
+  private async getAccount(accountId: number): Promise<Account> {
+    const account = await this.accountRepository.findById(accountId);
+    if (!account) {
+      throw new AccountNotFoundException(
+        `Account is not exists. accountId: ${accountId}`,
+      );
+    }
+
+    return account;
   }
 }
