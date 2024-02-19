@@ -3,11 +3,7 @@ import { AccountType } from 'src/type/enum/account-type.enum';
 import { AccountService } from 'src/use-case/account/service';
 import { AccountController } from './account.controller';
 import { AccountDto } from 'src/type/dto/account.dto';
-
-const mockAccountService = () => ({
-  getById: jest.fn(),
-  create: jest.fn(),
-});
+import { AccountServiceMock } from 'test/mock/use-case/account.service.mock';
 
 describe('accountController', () => {
   let accountController: AccountController;
@@ -22,7 +18,7 @@ describe('accountController', () => {
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [AccountController],
-      providers: [{ provide: AccountService, useFactory: mockAccountService }],
+      providers: [{ provide: AccountService, useClass: AccountServiceMock }],
     }).compile();
 
     accountController = moduleRef.get(AccountController);

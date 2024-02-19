@@ -33,7 +33,7 @@ export class FeedService {
     schoolId: number,
     query: FeedQueryDto,
   ): Promise<FeedDto[]> {
-    await this.getAccount(accountId);
+    await this.validateAccount(accountId);
     await this.validateMapping(accountId, schoolId);
     const feeds = await this.feedRepository.findBySchoolId(
       schoolId,
@@ -49,10 +49,7 @@ export class FeedService {
     schoolId: number,
     input: CreateFeedDto,
   ): Promise<FeedDto> {
-    const account = await this.getAccount(accountId);
-    if (account.getType() !== AccountType.ADMIN) {
-      throw new InvalidAccountException('Student cannot create feed');
-    }
+    await this.validateAccount(accountId);
     await this.validateMapping(accountId, schoolId);
     const createdFeed = await this.feedRepository.create(
       new CreateFeed(schoolId, input.title, input.content),
@@ -67,10 +64,7 @@ export class FeedService {
     feedId: number,
     input: UpdateFeedDto,
   ): Promise<FeedDto> {
-    const account = await this.getAccount(accountId);
-    if (account.getType() !== AccountType.ADMIN) {
-      throw new InvalidAccountException('Student cannot update feed');
-    }
+    await this.validateAccount(accountId);
     await this.validateMapping(accountId, schoolId);
 
     const feed = await this.feedRepository.findById(feedId);
@@ -89,10 +83,7 @@ export class FeedService {
   }
 
   public async delete(accountId: number, schoolId: number, feedId: number) {
-    const account = await this.getAccount(accountId);
-    if (account.getType() !== AccountType.ADMIN) {
-      throw new InvalidAccountException('Student cannot delete feed');
-    }
+    await this.validateAccount(accountId);
     await this.validateMapping(accountId, schoolId);
 
     const feed = await this.feedRepository.findById(feedId);
@@ -123,10 +114,13 @@ export class FeedService {
     }
   }
 
-  private async getAccount(accountId: number): Promise<Account> {
+  private async validateAccount(accountId: number): Promise<Account> {
     const account = await this.accountRepository.findById(accountId);
     if (!account) {
       throw new AccountNotFoundException(`Account is not exists: ${accountId}`);
+    }
+    if (account.getType() !== AccountType.ADMIN) {
+      throw new InvalidAccountException('Student cannot update feed');
     }
 
     return account;
