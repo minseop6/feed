@@ -35,12 +35,12 @@ describe('SchoolController', () => {
     });
   });
 
-  describe('getMappedList', () => {
-    test('should return school list', async () => {
+  describe('getSubscriptions', () => {
+    test('should return subscriptions', async () => {
       jest
-        .spyOn(schoolService, 'getMappedList')
+        .spyOn(schoolService, 'getSubscriptions')
         .mockResolvedValue([mockSchool]);
-      const schools = await schoolController.getMappedList(1);
+      const schools = await schoolController.getSubscriptions(1);
 
       expect(schools).toBeDefined();
       expect(schools).toBeInstanceOf(Array);
@@ -58,6 +58,25 @@ describe('SchoolController', () => {
 
       expect(school).toBeDefined();
       expect(school).toBeInstanceOf(SchoolDto);
+    });
+  });
+
+  describe('subscribe', () => {
+    test('should be subscribe successfully', async () => {
+      jest.spyOn(schoolService, 'subscribe').mockResolvedValue(mockSchool);
+      const school = await schoolController.subscribe(1, 1);
+
+      expect(school).toBeDefined();
+      expect(school).toBeInstanceOf(SchoolDto);
+    });
+  });
+
+  describe('unsubscribe', () => {
+    test('should be unsubscribe successfully', async () => {
+      jest.spyOn(schoolService, 'unsubscribe').mockResolvedValue();
+      const result = await schoolController.unsubscribe(1, 1);
+
+      expect(result).toBeUndefined();
     });
   });
 });

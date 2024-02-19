@@ -16,6 +16,7 @@ import { AccountType } from 'src/type/enum/account-type.enum';
 import { AccountNotFoundException } from 'src/type/exception/account-not-found.exception';
 import { InvalidAccountException } from 'src/type/exception/invalid-account.exception';
 import { SchoolMappingMapper } from 'src/domain/school-mapping';
+import { InvalidSchoolMappingException } from 'src/type/exception';
 
 jest.mock('typeorm-transactional', () => ({
   Transactional: jest.fn,
@@ -94,7 +95,7 @@ describe('SchoolService', () => {
         .spyOn(schoolRepository, 'findByIds')
         .mockResolvedValue([mockSchool, mockSchool]);
 
-      const schools = await schoolService.getMappedList(1);
+      const schools = await schoolService.getSubscriptions(1);
 
       expect(schools).toBeDefined();
       expect(schools).toHaveLength(2);
@@ -108,7 +109,7 @@ describe('SchoolService', () => {
         .mockResolvedValue([]);
       jest.spyOn(schoolRepository, 'findByIds').mockResolvedValue([]);
 
-      const schools = await schoolService.getMappedList(1);
+      const schools = await schoolService.getSubscriptions(1);
 
       expect(schools).toBeDefined();
       expect(schools).toHaveLength(0);
@@ -117,7 +118,7 @@ describe('SchoolService', () => {
     test('should be throw account is not exists exception', async () => {
       jest.spyOn(accountRepository, 'findById').mockResolvedValue(null);
 
-      expect(schoolService.getMappedList(1)).rejects.toThrow(
+      expect(schoolService.getSubscriptions(1)).rejects.toThrow(
         AccountNotFoundException,
       );
     });
@@ -156,5 +157,89 @@ describe('SchoolService', () => {
     expect(
       schoolService.create(1, { name: 'test', region: 'test region' }),
     ).rejects.toThrow(InvalidAccountException);
+  });
+
+  describe('subscribe', () => {
+    test('should be subscribe successfully', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(mockAccount);
+      jest.spyOn(schoolRepository, 'findById').mockResolvedValue(mockSchool);
+      jest
+        .spyOn(schoolMappingRepository, 'create')
+        .mockResolvedValue(mockSchoolMapping);
+
+      const school = await schoolService.subscribe(1, 1);
+
+      expect(school).toBeDefined();
+      expect(school).toBeInstanceOf(SchoolDto);
+    });
+
+    test('should be throw school is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(mockAccount);
+      jest.spyOn(schoolRepository, 'findById').mockResolvedValue(null);
+
+      expect(schoolService.subscribe(1, 1)).rejects.toThrow(
+        SchoolNotFoundException,
+      );
+    });
+
+    test('should be throw account is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(null);
+
+      expect(schoolService.subscribe(1, 1)).rejects.toThrow(
+        AccountNotFoundException,
+      );
+    });
+
+    test('should be throw mapping is already exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(mockAccount);
+      jest.spyOn(schoolRepository, 'findById').mockResolvedValue(mockSchool);
+      jest
+        .spyOn(schoolMappingRepository, 'findOne')
+        .mockResolvedValue(mockSchoolMapping);
+
+      expect(schoolService.subscribe(1, 1)).rejects.toThrow(
+        InvalidSchoolMappingException,
+      );
+    });
+  });
+
+  describe('unsubscribe', () => {
+    test('should be unsubscribe successfully', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(mockAccount);
+      jest.spyOn(schoolRepository, 'findById').mockResolvedValue(mockSchool);
+      jest
+        .spyOn(schoolMappingRepository, 'findOne')
+        .mockResolvedValue(mockSchoolMapping);
+      jest.spyOn(schoolMappingRepository, 'delete').mockResolvedValue();
+
+      await schoolService.unsubscribe(1, 1);
+    });
+
+    test('should be throw school is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(mockAccount);
+      jest.spyOn(schoolRepository, 'findById').mockResolvedValue(null);
+
+      expect(schoolService.unsubscribe(1, 1)).rejects.toThrow(
+        SchoolNotFoundException,
+      );
+    });
+
+    test('should be throw account is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(null);
+
+      expect(schoolService.unsubscribe(1, 1)).rejects.toThrow(
+        AccountNotFoundException,
+      );
+    });
+
+    test('should be throw mapping is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(mockAccount);
+      jest.spyOn(schoolRepository, 'findById').mockResolvedValue(mockSchool);
+      jest.spyOn(schoolMappingRepository, 'findOne').mockResolvedValue(null);
+
+      expect(schoolService.unsubscribe(1, 1)).rejects.toThrow(
+        InvalidSchoolMappingException,
+      );
+    });
   });
 });

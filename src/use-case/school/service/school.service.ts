@@ -10,6 +10,7 @@ import { AccountNotFoundException } from 'src/type/exception/account-not-found.e
 import { Account, IAccountRepository } from 'src/domain/account';
 import { ISchoolRepository } from 'src/domain/school';
 import { ISchoolMappingRepository } from 'src/domain/school-mapping';
+import { InvalidSchoolMappingException } from 'src/type/exception';
 
 @Injectable()
 export class SchoolService {
@@ -38,7 +39,7 @@ export class SchoolService {
     return SchoolDto.from(school);
   }
 
-  public async getMappedList(accountId: number): Promise<SchoolDto[]> {
+  public async getSubscriptions(accountId: number): Promise<SchoolDto[]> {
     const account = await this.accountRepository.findById(accountId);
     if (!account) {
       throw new AccountNotFoundException(
@@ -72,6 +73,48 @@ export class SchoolService {
     await this.schoolMappingRepository.create(accountId, createdSchool.getId());
 
     return SchoolDto.from(createdSchool);
+  }
+
+  public async subscribe(
+    accountId: number,
+    schoolId: number,
+  ): Promise<SchoolDto> {
+    await this.getAccount(accountId);
+    const school = await this.schoolRepository.findById(schoolId);
+    if (!school) {
+      throw new SchoolNotFoundException(
+        `School is not exists. schoolId: ${schoolId}`,
+      );
+    }
+    const existsSchoolMapping = await this.schoolMappingRepository.findOne(
+      accountId,
+      schoolId,
+    );
+    if (existsSchoolMapping) {
+      throw new InvalidSchoolMappingException(
+        'School mapping is already exists.',
+      );
+    }
+    await this.schoolMappingRepository.create(accountId, school.getId());
+    return SchoolDto.from(school);
+  }
+
+  public async unsubscribe(accountId: number, schoolId: number): Promise<void> {
+    await this.getAccount(accountId);
+    const school = await this.schoolRepository.findById(schoolId);
+    if (!school) {
+      throw new SchoolNotFoundException(
+        `School is not exists. schoolId: ${schoolId}`,
+      );
+    }
+    const existsSchoolMapping = await this.schoolMappingRepository.findOne(
+      accountId,
+      schoolId,
+    );
+    if (!existsSchoolMapping) {
+      throw new InvalidSchoolMappingException('School mapping is not exists.');
+    }
+    await this.schoolMappingRepository.delete(accountId, school.getId());
   }
 
   private async getAccount(accountId: number): Promise<Account> {
