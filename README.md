@@ -1,73 +1,82 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 프로젝트 환경 설정
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+1. 프로젝트의 의존성을 설치하세요.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+   ```bash
+   npm ci
+   ```
 
-## Description
+2. .env 파일을 생성하세요
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+   ```
+   PORT = 8080
+   DATABASE_HOST = 'localhost'
+   DATABASE_PORT = 3307
+   DATABASE_USERNAME = 'root'
+   DATABASE_PASSWORD = '1234'
+   DATABASE_DATABASE = 'feed'
+   ```
 
-## Installation
+3. 애플리케이션이 빌드 되는지 확인하세요.
 
-```bash
-$ npm install
-```
+   ```bash
+   npm run build
+   ```
 
-## Running the app
+4. 애플리케이션이 동작 하는지 확인하세요.
 
-```bash
-# development
-$ npm run start
+   데이터베이스로 mysql 8을 사용중입니다.
+   로컬 데이터베이스를 사용하거나 해당 프로젝트의 `docker-compose.yaml`을 사용해 데이터베이스 구성이 선행돼야합니다.
 
-# watch mode
-$ npm run start:dev
+   ```bash
+   npm run start
+   ```
 
-# production mode
-$ npm run start:prod
-```
+# 프로젝트 구성 요소
 
-## Test
+## 아키텍쳐
 
-```bash
-# unit tests
-$ npm run test
+해당 프로젝트는 클린 아키텍처를 지향하고 있습니다.
 
-# e2e tests
-$ npm run test:e2e
+#### common
 
-# test coverage
-$ npm run test:cov
-```
+서비스 전체에서 공통적으로 적용되는 컴포넌트입니다
+(ex. filter, interceptor ...)
 
-## Support
+#### config
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+외부 의존성 또는 라이브러리의 설정을 적용하는 디렉토리입니다.
 
-## Stay in touch
+#### domain
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+애플리케이션의 핵심 도메인을 구현하는 레이어로 애플리케이션이 가져야 하는 핵심 요소만 갖기 때문에 다른 레이어에 의존하지 않습니다.
 
-## License
+#### use-case
 
-Nest is [MIT licensed](LICENSE).
+비지니스 로직이 구현되는 레이어입니다.
+
+#### infrastructure
+
+리소스 의존성 또는 외부 API들의 아웃바운드 인터페이스를 담당하는 레이어입니다.
+
+#### web
+
+서비스 API 또는 이벤트 컨슘과 같은 인바운드 인터페이스를 담당하는 레이어입니다.
+
+## 사용된 기술
+
+- Node 20
+- TypeScript
+- NestJS
+- mysql 8
+- typeORM
+
+# 링크
+
+### 애플리케이션
+
+- 로컬 환경 <http://localhost:8080>
+
+### 문서
+
+- [API 문서](http://localhost:8080/docs) (Swagger)
