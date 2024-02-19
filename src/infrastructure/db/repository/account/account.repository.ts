@@ -55,7 +55,12 @@ export class AccountRepository implements IAccountRepository {
 
   public async create(input: CreateAccount): Promise<Account> {
     const entity = await this.accountRepository.save(
-      this.accountRepository.create({ ...input }),
+      this.accountRepository.create({
+        type: input.getType(),
+        email: input.getEmail(),
+        name: input.getName(),
+        password: input.getPassword(),
+      }),
     );
 
     return AccountMapper.of(

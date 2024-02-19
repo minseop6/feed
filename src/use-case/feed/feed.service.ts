@@ -33,7 +33,7 @@ export class FeedService {
     schoolId: number,
     query: FeedQueryDto,
   ): Promise<FeedDto[]> {
-    await this.validateAccount(accountId);
+    await this.validateAccount(accountId, false);
     await this.validateMapping(accountId, schoolId);
     const feeds = await this.feedRepository.findBySchoolId(
       schoolId,
@@ -114,12 +114,15 @@ export class FeedService {
     }
   }
 
-  private async validateAccount(accountId: number): Promise<Account> {
+  private async validateAccount(
+    accountId: number,
+    validatePermission = true,
+  ): Promise<Account> {
     const account = await this.accountRepository.findById(accountId);
     if (!account) {
       throw new AccountNotFoundException(`Account is not exists: ${accountId}`);
     }
-    if (account.getType() !== AccountType.ADMIN) {
+    if (validatePermission && account.getType() !== AccountType.ADMIN) {
       throw new InvalidAccountException('Student cannot update feed');
     }
 

@@ -65,7 +65,7 @@ export class SchoolMappingRepository implements ISchoolMappingRepository {
       schoolId,
     });
 
-    await this.schoolMappingRepository.save(entity);
+    await this.schoolMappingRepository.insert(entity);
 
     return SchoolMappingMapper.of(
       entity.schoolId,
@@ -75,7 +75,7 @@ export class SchoolMappingRepository implements ISchoolMappingRepository {
   }
 
   public async delete(accountId: number, schoolId: number): Promise<void> {
-    await this.schoolMappingRepository.delete({
+    await this.schoolMappingRepository.softDelete({
       accountId,
       schoolId,
     });

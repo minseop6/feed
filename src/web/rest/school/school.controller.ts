@@ -1,11 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Post,
-  Put,
 } from '@nestjs/common';
 import { SchoolService } from '../../../use-case/school/service';
 import { CreateSchoolDto, SchoolDto } from 'src/type/dto/school.dto';
@@ -45,7 +45,7 @@ export class SchoolController {
     return this.schoolService.subscribe(accountId, schoolId);
   }
 
-  @Put(':schoolId/subscriptions/:subscriptionId')
+  @Delete(':schoolId/subscriptions')
   public async unsubscribe(
     @Param('accountId', ParseIntPipe) accountId: number,
     @Param('schoolId', ParseIntPipe) schoolId: number,
