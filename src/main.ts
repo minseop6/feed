@@ -6,6 +6,7 @@ import {
   BadRequestExceptionFilter,
   NotFoundExceptionFilter,
 } from './common/exception/exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -20,6 +21,15 @@ async function bootstrap() {
     new NotFoundExceptionFilter(),
     new BadRequestExceptionFilter(),
   );
+  const config = new DocumentBuilder()
+    .setTitle('Feed API')
+    .setDescription('학교 소식을 피드 형태로 제공하는 API 입니다.')
+    .setVersion('1.0')
+    .addTag('feed')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
   await app.listen(3000);
 }
 bootstrap();
