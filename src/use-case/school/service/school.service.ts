@@ -1,25 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { AccountType } from 'src/type/enum/account-type.enum';
 import { Transactional } from 'typeorm-transactional';
 import { CreateSchoolDto, SchoolDto } from 'src/type/dto/school.dto';
-import {
-  AccountRepository,
-  SchoolMappingRepository,
-  SchoolRepository,
-} from 'src/infrastructure/db/repository';
 import { CreateSchool } from 'src/domain/school/school';
 import { SchoolNotFoundException } from 'src/type/exception/school-not-found.exception';
 import { InvalidAccountException } from 'src/type/exception/invalid-account.exception';
 import { AccountNotFoundException } from 'src/type/exception/account-not-found.exception';
-import { Account } from 'src/domain/account';
+import { Account, IAccountRepository } from 'src/domain/account';
+import { ISchoolRepository } from 'src/domain/school';
+import { ISchoolMappingRepository } from 'src/domain/school-mapping';
 
 @Injectable()
 export class SchoolService {
   constructor(
-    private readonly accountRepository: AccountRepository,
-    private readonly schoolRepository: SchoolRepository,
-    private readonly schoolMappingRepository: SchoolMappingRepository,
+    @Inject('AccountRepository')
+    private readonly accountRepository: IAccountRepository,
+    @Inject('SchoolRepository')
+    private readonly schoolRepository: ISchoolRepository,
+    @Inject('SchoolMappingRepository')
+    private readonly schoolMappingRepository: ISchoolMappingRepository,
   ) {}
 
   public async getById(

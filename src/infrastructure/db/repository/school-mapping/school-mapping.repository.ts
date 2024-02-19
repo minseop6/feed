@@ -5,8 +5,11 @@ import { SchoolMappingEntity } from '../../entity';
 import {
   ISchoolMappingRepository,
   SchoolMapping,
+  SchoolMappingMapper,
 } from 'src/domain/school-mapping';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class SchoolMappingRepository implements ISchoolMappingRepository {
   constructor(
     @InjectRepository(SchoolMappingEntity)
@@ -28,7 +31,7 @@ export class SchoolMappingRepository implements ISchoolMappingRepository {
       return null;
     }
 
-    return new SchoolMapping(
+    return SchoolMappingMapper.of(
       entity.schoolId,
       entity.accountId,
       entity.deletedAt,
@@ -46,7 +49,7 @@ export class SchoolMappingRepository implements ISchoolMappingRepository {
 
     await this.schoolMappingRepository.save(entity);
 
-    return new SchoolMapping(
+    return SchoolMappingMapper.of(
       entity.schoolId,
       entity.accountId,
       entity.deletedAt,

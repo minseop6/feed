@@ -1,6 +1,5 @@
 import {
   AccountRepository,
-  SchoolMappingRepository,
   SchoolRepository,
 } from 'src/infrastructure/db/repository';
 import { SchoolService } from './school.service';
@@ -37,18 +36,18 @@ describe('SchoolService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         SchoolService,
-        { provide: SchoolRepository, useClass: SchoolRepositoryMock },
+        { provide: 'SchoolRepository', useClass: SchoolRepositoryMock },
         {
-          provide: SchoolMappingRepository,
+          provide: 'SchoolMappingRepository',
           useClass: SchoolMappingRepositoryMock,
         },
-        { provide: AccountRepository, useClass: AccountRepositoryMock },
+        { provide: 'AccountRepository', useClass: AccountRepositoryMock },
       ],
     }).compile();
 
     schoolService = moduleRef.get(SchoolService);
-    schoolRepository = moduleRef.get(SchoolRepository);
-    accountRepository = moduleRef.get(AccountRepository);
+    schoolRepository = moduleRef.get('SchoolRepository');
+    accountRepository = moduleRef.get('AccountRepository');
   });
 
   describe('get by id', () => {

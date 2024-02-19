@@ -13,7 +13,7 @@ export class SchoolDto {
   public address: string;
 
   @Expose()
-  public userId: number;
+  public accountId: number;
 
   public static from(school: School): SchoolDto {
     return plainToClass(SchoolDto, school, {

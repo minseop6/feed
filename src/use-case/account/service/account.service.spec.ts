@@ -23,12 +23,12 @@ describe('AccountService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         AccountService,
-        { provide: AccountRepository, useClass: AccountRepositoryMock },
+        { provide: 'AccountRepository', useClass: AccountRepositoryMock },
       ],
     }).compile();
 
     accountService = moduleRef.get(AccountService);
-    accountRepository = moduleRef.get(AccountRepository);
+    accountRepository = moduleRef.get('AccountRepository');
   });
 
   describe('getById', () => {

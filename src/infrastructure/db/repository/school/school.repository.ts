@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { SchoolEntity } from 'src/infrastructure/db/entity';
-import { ISchoolRepository, CreateSchool, School } from 'src/domain/school';
+import {
+  ISchoolRepository,
+  CreateSchool,
+  School,
+  SchoolMapper,
+} from 'src/domain/school';
 
 @Injectable()
 export class SchoolRepository implements ISchoolRepository {
@@ -18,14 +23,17 @@ export class SchoolRepository implements ISchoolRepository {
       return null;
     }
 
-    return new School(entity.id, entity.name, entity.region);
+    return SchoolMapper.of(entity.id, entity.name, entity.region);
   }
 
   public async save(school: CreateSchool): Promise<School> {
     const entity = await this.schoolRepository.save(
-      this.schoolRepository.create({ ...school }),
+      this.schoolRepository.create({
+        name: school.getName(),
+        region: school.getRegion(),
+      }),
     );
 
-    return new School(entity.id, entity.name, entity.region);
+    return SchoolMapper.of(entity.id, entity.name, entity.region);
   }
 }

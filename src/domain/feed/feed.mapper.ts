@@ -1,7 +1,13 @@
 import { Feed } from './feed';
 
 export class FeedMapper {
-  public static of(id: number, title: string, content: string): Feed {
-    return new Feed(id, title, content);
+  public static of(
+    id: number,
+    schoolId: number,
+    title: string,
+    content: string,
+    createdAt: Date,
+  ): Feed {
+    return new Feed(id, schoolId, title, content, createdAt);
   }
 }

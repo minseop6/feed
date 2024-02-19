@@ -1,12 +1,13 @@
 import {
-  BaseEntity,
   Column,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { SchoolEntity } from './school.entity';
+import { BaseEntity } from './base.entity';
 
 @Entity('feed')
 export class FeedEntity extends BaseEntity {
@@ -26,5 +27,6 @@ export class FeedEntity extends BaseEntity {
   public deletedAt?: Date;
 
   @ManyToOne(() => SchoolEntity, (school) => school.feeds)
+  @JoinColumn({ name: 'school_id' })
   public school: SchoolEntity;
 }

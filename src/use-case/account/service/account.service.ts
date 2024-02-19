@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
-import { AccountRepository } from 'src/infrastructure/db/repository';
 import { AccountNotFoundException } from 'src/type/exception/account-not-found.exception';
 import { DuplicateEmailException } from 'src/type/exception/duplicate-email.exception';
 import { AccountDto, CreateAccountDto } from 'src/type/dto/account.dto';
 import { CreateAccount } from 'src/domain/account/account';
+import { IAccountRepository } from 'src/domain/account';
 
 @Injectable()
 export class AccountService {
-  constructor(private readonly accountRepository: AccountRepository) {}
+  constructor(
+    @Inject('AccountRepository')
+    private readonly accountRepository: IAccountRepository,
+  ) {}
 
   public async getById(id: number): Promise<AccountDto> {
     const account = await this.accountRepository.findById(id);
