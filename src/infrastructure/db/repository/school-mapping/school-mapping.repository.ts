@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 
 import { SchoolMappingEntity } from '../../entity';
 import {
@@ -24,6 +24,7 @@ export class SchoolMappingRepository implements ISchoolMappingRepository {
       where: {
         accountId,
         schoolId,
+        deletedAt: IsNull(),
       },
     });
 
@@ -35,6 +36,23 @@ export class SchoolMappingRepository implements ISchoolMappingRepository {
       entity.schoolId,
       entity.accountId,
       entity.deletedAt,
+    );
+  }
+
+  public async findByAccountId(accountId: number) {
+    const entities = await this.schoolMappingRepository.find({
+      where: {
+        accountId,
+        deletedAt: IsNull(),
+      },
+    });
+
+    return entities.map((entity) =>
+      SchoolMappingMapper.of(
+        entity.schoolId,
+        entity.accountId,
+        entity.deletedAt,
+      ),
     );
   }
 

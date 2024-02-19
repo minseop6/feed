@@ -13,6 +13,13 @@ import { CreateSchoolDto, SchoolDto } from 'src/type/dto/school.dto';
 export class SchoolController {
   constructor(private readonly schoolService: SchoolService) {}
 
+  @Get('mappings')
+  public async getMappedList(
+    @Param('accountId', ParseIntPipe) accountId: number,
+  ): Promise<SchoolDto[]> {
+    return this.schoolService.getMappedList(accountId);
+  }
+
   @Get(':schoolId')
   public async getById(
     @Param('accountId', ParseIntPipe) accountId: number,

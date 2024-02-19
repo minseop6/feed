@@ -35,6 +35,19 @@ describe('SchoolController', () => {
     });
   });
 
+  describe('getMappedList', () => {
+    test('should return school list', async () => {
+      jest
+        .spyOn(schoolService, 'getMappedList')
+        .mockResolvedValue([mockSchool]);
+      const schools = await schoolController.getMappedList(1);
+
+      expect(schools).toBeDefined();
+      expect(schools).toBeInstanceOf(Array);
+      expect(schools[0]).toBeInstanceOf(SchoolDto);
+    });
+  });
+
   describe('create', () => {
     test('should be create successfully', async () => {
       jest.spyOn(schoolService, 'create').mockResolvedValue(mockSchool);

@@ -38,6 +38,24 @@ export class SchoolService {
     return SchoolDto.from(school);
   }
 
+  public async getMappedList(accountId: number): Promise<SchoolDto[]> {
+    const account = await this.accountRepository.findById(accountId);
+    if (!account) {
+      throw new AccountNotFoundException(
+        `Account is not exists. accountId: ${accountId}`,
+      );
+    }
+
+    const schoolMappings =
+      await this.schoolMappingRepository.findByAccountId(accountId);
+
+    const schools = await this.schoolRepository.findByIds(
+      schoolMappings.map((mapping) => mapping.getSchoolId()),
+    );
+
+    return schools.map(SchoolDto.from);
+  }
+
   @Transactional()
   public async create(
     accountId: number,

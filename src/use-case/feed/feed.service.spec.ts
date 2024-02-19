@@ -230,4 +230,64 @@ describe('FeedService', () => {
       expect(action).rejects.toThrow(InvalidFeedException);
     });
   });
+
+  describe('delete', () => {
+    test('should be delete successfully', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(accountMock);
+      jest
+        .spyOn(schoolMappingRepository, 'findOne')
+        .mockResolvedValue(schoolMappingMock);
+      jest.spyOn(feedRepository, 'findById').mockResolvedValue(feedMock);
+      jest.spyOn(feedRepository, 'delete').mockResolvedValue(undefined);
+
+      await feedService.delete(1, 1, 1);
+    });
+
+    test('should be throw account is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(null);
+
+      const action = feedService.delete(1, 1, 1);
+      expect(action).rejects.toThrow(AccountNotFoundException);
+    });
+
+    test('should be throw student cannot delete feed exception', async () => {
+      jest
+        .spyOn(accountRepository, 'findById')
+        .mockResolvedValue(userAccountMock);
+
+      const action = feedService.delete(1, 1, 1);
+      expect(action).rejects.toThrow(InvalidAccountException);
+    });
+
+    test('should be throw school mapping is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(accountMock);
+      jest.spyOn(schoolMappingRepository, 'findOne').mockResolvedValue(null);
+
+      const action = feedService.delete(1, 1, 1);
+      expect(action).rejects.toThrow(InvalidSchoolMappingException);
+    });
+
+    test('should be throw feed is not exists exception', async () => {
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(accountMock);
+      jest
+        .spyOn(schoolMappingRepository, 'findOne')
+        .mockResolvedValue(schoolMappingMock);
+      jest.spyOn(feedRepository, 'findById').mockResolvedValue(null);
+
+      const action = feedService.delete(1, 1, 1);
+      expect(action).rejects.toThrow(FeedNotFoundException);
+    });
+
+    test('should be throw feed is not exists in school exception', async () => {
+      const feed = FeedMapper.of(1, 2, 'test', 'test', new Date());
+      jest.spyOn(accountRepository, 'findById').mockResolvedValue(accountMock);
+      jest
+        .spyOn(schoolMappingRepository, 'findOne')
+        .mockResolvedValue(schoolMappingMock);
+      jest.spyOn(feedRepository, 'findById').mockResolvedValue(feed);
+
+      const action = feedService.delete(1, 1, 1);
+      expect(action).rejects.toThrow(InvalidFeedException);
+    });
+  });
 });

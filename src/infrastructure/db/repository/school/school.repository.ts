@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { SchoolEntity } from 'src/infrastructure/db/entity';
 import {
@@ -24,6 +24,15 @@ export class SchoolRepository implements ISchoolRepository {
     }
 
     return SchoolMapper.of(entity.id, entity.name, entity.region);
+  }
+
+  public async findByIds(ids: number[]): Promise<School[]> {
+    const entities = await this.schoolRepository.find({
+      where: { id: In(ids) },
+    });
+    return entities.map((entity) =>
+      SchoolMapper.of(entity.id, entity.name, entity.region),
+    );
   }
 
   public async save(school: CreateSchool): Promise<School> {

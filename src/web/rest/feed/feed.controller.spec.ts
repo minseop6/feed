@@ -34,7 +34,10 @@ describe('FeedController', () => {
         .spyOn(feedService, 'getBySchoolId')
         .mockResolvedValue([feedDtoMock, feedDtoMock, feedDtoMock]);
 
-      const result = await feedController.getBySchoolId(1, 1, {});
+      const result = await feedController.getBySchoolId(1, 1, {
+        page: 1,
+        take: 10,
+      });
       expect(result).toBeDefined();
       expect(feedService.getBySchoolId).toHaveBeenCalled();
     });
